@@ -291,6 +291,7 @@ function App() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [showProjectSelector, setShowProjectSelector] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
   const currentProject = projects.find(p => p.id === currentProjectId);
 
@@ -433,6 +434,193 @@ function App() {
         )
       );
     }
+  };
+
+  // Export functions
+  const exportToMarkdown = () => {
+    const completedCount = currentProject.checklist.filter(item => item.completed).length;
+    const totalCount = currentProject.checklist.length;
+    const progressPercentage = Math.round((completedCount / totalCount) * 100);
+    
+    let markdown = `# ${currentProject.name} - API RESTful Checklist\n\n`;
+    markdown += `**Progress:** ${completedCount}/${totalCount} (${progressPercentage}% completed)\n\n`;
+    markdown += `Generated on: ${new Date().toLocaleDateString()}\n\n`;
+    
+    // Group by category
+    const grouped = currentProject.checklist.reduce((acc, item) => {
+      if (!acc[item.category]) acc[item.category] = [];
+      acc[item.category].push(item);
+      return acc;
+    }, {});
+    
+    Object.entries(grouped).forEach(([category, items]) => {
+      const categoryCompleted = items.filter(item => item.completed).length;
+      const categoryTotal = items.length;
+      const categoryIcon = getCategoryIcon(category);
+      
+      markdown += `## ${categoryIcon} ${category} (${categoryCompleted}/${categoryTotal})\n\n`;
+      
+      // Sort by priority
+      const sortedItems = getFilteredAndSortedItems(items);
+      
+      sortedItems.forEach(item => {
+        const checkbox = item.completed ? '[x]' : '[ ]';
+        const priorityIcon = getPriorityIcon(item.priority);
+        markdown += `- ${checkbox} **${item.text}** ${priorityIcon}\n`;
+        if (item.description) {
+          markdown += `  - ${item.description}\n`;
+        }
+        if (item.example) {
+          markdown += `  - *Example:* \`${item.example}\`\n`;
+        }
+        if (item.references && item.references.length > 0) {
+          markdown += `  - **References:**\n`;
+          item.references.forEach(ref => {
+            markdown += `    - [${ref.title}](${ref.url})\n`;
+          });
+        }
+        markdown += '\n';
+      });
+      
+      markdown += '\n';
+    });
+    
+    // Download
+    const blob = new Blob([markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${currentProject.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_checklist.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setShowExportMenu(false);
+  };
+
+  const exportToJSON = () => {
+    const exportData = {
+      projectName: currentProject.name,
+      exportDate: new Date().toISOString(),
+      progress: {
+        completed: currentProject.checklist.filter(item => item.completed).length,
+        total: currentProject.checklist.length
+      },
+      checklist: currentProject.checklist.map(item => ({
+        id: item.id,
+        text: item.text,
+        category: item.category,
+        priority: item.priority,
+        completed: item.completed,
+        description: item.description,
+        example: item.example,
+        references: item.references
+      }))
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${currentProject.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_checklist.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setShowExportMenu(false);
+  };
+
+  const exportToPDF = () => {
+    // Create a printable HTML version
+    const completedCount = currentProject.checklist.filter(item => item.completed).length;
+    const totalCount = currentProject.checklist.length;
+    const progressPercentage = Math.round((completedCount / totalCount) * 100);
+    
+    let html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${currentProject.name} - API RESTful Checklist</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+          h1 { color: #333; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+          h2 { color: #555; margin-top: 30px; }
+          .progress { background: #f0f0f0; padding: 15px; border-radius: 8px; margin: 20px 0; }
+          .category { margin: 20px 0; }
+          .task { margin: 10px 0; padding: 10px; border-left: 3px solid #ddd; }
+          .task.completed { background: #f8fff8; border-left-color: #4caf50; }
+          .priority-high { border-left-color: #ff4444; }
+          .priority-medium { border-left-color: #ff9800; }
+          .priority-low { border-left-color: #4caf50; }
+          .task-title { font-weight: bold; }
+          .task-description { color: #666; margin: 5px 0; }
+          .task-example { background: #f8f9fa; padding: 8px; border-radius: 4px; margin: 5px 0; font-family: monospace; }
+          .references { margin-top: 10px; }
+          .references a { color: #667eea; text-decoration: none; }
+          @media print { body { margin: 20px; } }
+        </style>
+      </head>
+      <body>
+        <h1>${currentProject.name} - API RESTful Checklist</h1>
+        <div class="progress">
+          <strong>Progress:</strong> ${completedCount}/${totalCount} tasks completed (${progressPercentage}%)
+          <br><strong>Generated:</strong> ${new Date().toLocaleDateString()}
+        </div>
+    `;
+    
+    // Group by category
+    const grouped = currentProject.checklist.reduce((acc, item) => {
+      if (!acc[item.category]) acc[item.category] = [];
+      acc[item.category].push(item);
+      return acc;
+    }, {});
+    
+    Object.entries(grouped).forEach(([category, items]) => {
+      const categoryCompleted = items.filter(item => item.completed).length;
+      const categoryTotal = items.length;
+      const categoryIcon = getCategoryIcon(category);
+      
+      html += `<div class="category">`;
+      html += `<h2>${categoryIcon} ${category} (${categoryCompleted}/${categoryTotal})</h2>`;
+      
+      const sortedItems = getFilteredAndSortedItems(items);
+      
+      sortedItems.forEach(item => {
+        const completedClass = item.completed ? 'completed' : '';
+        const priorityClass = `priority-${item.priority}`;
+        const checkbox = item.completed ? '✅' : '☐';
+        const priorityIcon = getPriorityIcon(item.priority);
+        
+        html += `<div class="task ${completedClass} ${priorityClass}">`;
+        html += `<div class="task-title">${checkbox} ${item.text} ${priorityIcon}</div>`;
+        if (item.description) {
+          html += `<div class="task-description">${item.description}</div>`;
+        }
+        if (item.example) {
+          html += `<div class="task-example"><strong>Example:</strong> ${item.example}</div>`;
+        }
+        if (item.references && item.references.length > 0) {
+          html += `<div class="references"><strong>References:</strong><br>`;
+          item.references.forEach(ref => {
+            html += `<a href="${ref.url}" target="_blank">${ref.title}</a><br>`;
+          });
+          html += `</div>`;
+        }
+        html += `</div>`;
+      });
+      
+      html += `</div>`;
+    });
+    
+    html += `</body></html>`;
+    
+    // Open in new window for printing
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    setShowExportMenu(false);
   };
 
   if (!currentProject) {
@@ -624,6 +812,28 @@ function App() {
             <button onClick={resetCurrentProject} className="reset-button">
               Reset Project
             </button>
+            <div className="export-section">
+              <button 
+                className="export-button"
+                onClick={() => setShowExportMenu(!showExportMenu)}
+              >
+                Export
+              </button>
+              
+              {showExportMenu && (
+                <div className="export-dropdown">
+                  <button onClick={exportToMarkdown} className="export-option">
+                    📄 Markdown (.md)
+                  </button>
+                  <button onClick={exportToJSON} className="export-option">
+                    📋 JSON (.json)
+                  </button>
+                  <button onClick={exportToPDF} className="export-option">
+                    🖨️ PDF (Print)
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
