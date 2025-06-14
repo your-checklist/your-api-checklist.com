@@ -7,6 +7,7 @@ function App() {
       id: 1, 
       text: 'Use nouns instead of verbs in endpoints', 
       category: 'Design', 
+      priority: 'high',
       completed: false,
       description: 'REST endpoints should represent resources (nouns) rather than actions (verbs). This makes your API more intuitive and follows REST principles.',
       example: 'Good: GET /users/123 | Bad: GET /getUser/123',
@@ -19,6 +20,7 @@ function App() {
       id: 2, 
       text: 'Use plural nouns for collections', 
       category: 'Design', 
+      priority: 'high',
       completed: false,
       description: 'Collections of resources should use plural nouns to clearly indicate that multiple items can be returned.',
       example: 'Good: GET /users | Bad: GET /user',
@@ -31,6 +33,7 @@ function App() {
       id: 13, 
       text: 'Use consistent naming conventions', 
       category: 'Design', 
+      priority: 'medium',
       completed: false,
       description: 'Maintain consistent naming patterns throughout your API (camelCase, snake_case, or kebab-case). Consistency improves developer experience.',
       example: 'Choose one: user_name, userName, or user-name and stick with it',
@@ -43,6 +46,7 @@ function App() {
       id: 15, 
       text: 'Use appropriate response formats (JSON)', 
       category: 'Design', 
+      priority: 'high',
       completed: false,
       description: 'JSON is the standard for modern APIs due to its lightweight nature and universal support. Ensure consistent JSON structure across endpoints.',
       example: 'Content-Type: application/json with proper JSON formatting',
@@ -55,6 +59,7 @@ function App() {
       id: 3, 
       text: 'Use proper HTTP status codes (2xx, 4xx, 5xx)', 
       category: 'HTTP', 
+      priority: 'high',
       completed: false,
       description: 'HTTP status codes communicate the result of requests clearly. Use 2xx for success, 4xx for client errors, and 5xx for server errors.',
       example: '200 OK, 201 Created, 400 Bad Request, 404 Not Found, 500 Internal Server Error',
@@ -68,6 +73,7 @@ function App() {
       id: 4, 
       text: 'Implement proper error handling with consistent format', 
       category: 'HTTP', 
+      priority: 'high',
       completed: false,
       description: 'Standardize error responses with clear messages, error codes, and helpful information for debugging and user feedback.',
       example: '{"error": {"code": "VALIDATION_ERROR", "message": "Email is required", "field": "email"}}',
@@ -80,6 +86,7 @@ function App() {
       id: 5, 
       text: 'Use HTTP methods correctly (GET, POST, PUT, DELETE)', 
       category: 'HTTP', 
+      priority: 'high',
       completed: false,
       description: 'Each HTTP method has a specific purpose: GET for retrieval, POST for creation, PUT for updates, DELETE for removal. Follow these semantics.',
       example: 'GET /users (list), POST /users (create), PUT /users/123 (update), DELETE /users/123 (remove)',
@@ -92,6 +99,7 @@ function App() {
       id: 6, 
       text: 'Implement pagination for large datasets', 
       category: 'Performance', 
+      priority: 'medium',
       completed: false,
       description: 'Prevent performance issues and timeouts by limiting response sizes. Implement cursor-based or offset-based pagination.',
       example: 'GET /users?page=2&limit=20 or GET /users?cursor=abc123&limit=20',
@@ -104,6 +112,7 @@ function App() {
       id: 7, 
       text: 'Add caching headers (Cache-Control, ETag)', 
       category: 'Performance', 
+      priority: 'medium',
       completed: false,
       description: 'Implement HTTP caching to reduce server load and improve response times. Use Cache-Control for cache policies and ETags for conditional requests.',
       example: 'Cache-Control: max-age=3600, ETag: "abc123"',
@@ -116,6 +125,7 @@ function App() {
       id: 8, 
       text: 'Implement rate limiting', 
       category: 'Security', 
+      priority: 'high',
       completed: false,
       description: 'Protect your API from abuse and ensure fair usage by implementing rate limiting. Communicate limits through headers.',
       example: 'X-RateLimit-Limit: 1000, X-RateLimit-Remaining: 999, X-RateLimit-Reset: 1609459200',
@@ -128,6 +138,7 @@ function App() {
       id: 9, 
       text: 'Use HTTPS everywhere', 
       category: 'Security', 
+      priority: 'high',
       completed: false,
       description: 'Encrypt all API communications to protect sensitive data in transit. HTTPS is essential for security and is required by modern browsers.',
       example: 'https://api.example.com instead of http://api.example.com',
@@ -140,6 +151,7 @@ function App() {
       id: 10, 
       text: 'Implement proper authentication (JWT, OAuth)', 
       category: 'Security', 
+      priority: 'high',
       completed: false,
       description: 'Secure your API with robust authentication mechanisms. JWT for stateless auth, OAuth for third-party integrations.',
       example: 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
@@ -153,6 +165,7 @@ function App() {
       id: 14, 
       text: 'Implement input validation', 
       category: 'Security', 
+      priority: 'high',
       completed: false,
       description: 'Validate all input data to prevent injection attacks and ensure data integrity. Use schema validation and sanitization.',
       example: 'Validate email format, check string lengths, sanitize SQL inputs',
@@ -165,6 +178,7 @@ function App() {
       id: 11, 
       text: 'Version your API (/v1/, /v2/)', 
       category: 'Versioning', 
+      priority: 'medium',
       completed: false,
       description: 'API versioning allows you to evolve your API without breaking existing clients. Use URL versioning, header versioning, or parameter versioning.',
       example: 'https://api.example.com/v1/users or Accept: application/vnd.api+json;version=1',
@@ -177,6 +191,7 @@ function App() {
       id: 12, 
       text: 'Provide comprehensive API documentation', 
       category: 'Documentation', 
+      priority: 'low',
       completed: false,
       description: 'Good documentation is crucial for API adoption. Include examples, error codes, authentication details, and interactive testing capabilities.',
       example: 'Use tools like Swagger/OpenAPI, Postman, or custom documentation sites',
@@ -202,7 +217,8 @@ function App() {
       ...item,
       description: item.description || 'No description available.',
       example: item.example || '',
-      references: item.references || []
+      references: item.references || [],
+      priority: item.priority || 'medium'
     };
   };
 
@@ -242,6 +258,9 @@ function App() {
     }
     return projects[0]?.id || null;
   });
+
+  // Priority filter state
+  const [priorityFilter, setPriorityFilter] = useState('all');
 
   // Collapsed categories state
   const [collapsedCategories, setCollapsedCategories] = useState(() => {
@@ -429,6 +448,49 @@ function App() {
     return acc;
   }, {});
 
+  // Filter and sort items by priority
+  const getFilteredAndSortedItems = (items) => {
+    let filteredItems = items;
+    
+    // Filter by priority if not 'all'
+    if (priorityFilter !== 'all') {
+      filteredItems = items.filter(item => item.priority === priorityFilter);
+    }
+    
+    // Sort by priority (high -> medium -> low)
+    const priorityOrder = { 'high': 0, 'medium': 1, 'low': 2 };
+    return filteredItems.sort((a, b) => {
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
+  };
+
+  const getPriorityColor = (priority) => {
+    const colors = {
+      'high': '#ff4444',
+      'medium': '#ff9800',
+      'low': '#4caf50'
+    };
+    return colors[priority] || '#666';
+  };
+
+  const getPriorityIcon = (priority) => {
+    const icons = {
+      'high': '🔴',
+      'medium': '🟡',
+      'low': '🟢'
+    };
+    return icons[priority] || '⚪';
+  };
+
+  const getPriorityLabel = (priority) => {
+    const labels = {
+      'high': 'High',
+      'medium': 'Medium',
+      'low': 'Low'
+    };
+    return labels[priority] || 'Unknown';
+  };
+
   const completedCount = currentProject.checklist.filter(item => item.completed).length;
   const totalCount = currentProject.checklist.length;
   const progressPercentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
@@ -567,6 +629,21 @@ function App() {
 
         <h1 className="title">API RESTful Checklist</h1>
         <p className="subtitle">Best practices to develop robust and maintainable APIs</p>
+        
+        <div className="priority-filter">
+          <label htmlFor="priority-select" className="filter-label">Filter by priority:</label>
+          <select 
+            id="priority-select"
+            value={priorityFilter} 
+            onChange={(e) => setPriorityFilter(e.target.value)}
+            className="priority-select"
+          >
+            <option value="all">All priorities</option>
+            <option value="high">🔴 High priority</option>
+            <option value="medium">🟡 Medium priority</option>
+            <option value="low">🟢 Low priority</option>
+          </select>
+        </div>
       </div>
       
       <div className="checklist-container">
@@ -626,7 +703,7 @@ function App() {
                 
                 {!isCollapsed && (
                   <ul className="category-items">
-                    {items.map((item) => {
+                    {getFilteredAndSortedItems(items).map((item) => {
                       const isExpanded = expandedItems[item.id];
                       return (
                         <li key={item.id} className={`checklist-item ${item.completed ? 'completed' : ''}`}>
@@ -641,6 +718,10 @@ function App() {
                               className="checkbox"
                             />
                             <span className="item-text">{item.text}</span>
+                            <div className="item-priority" title={`${getPriorityLabel(item.priority)} priority`}>
+                              <span className="priority-icon">{getPriorityIcon(item.priority)}</span>
+                              <span className="priority-text">{getPriorityLabel(item.priority)}</span>
+                            </div>
                             <button
                               className="expand-btn"
                               onClick={(e) => {
