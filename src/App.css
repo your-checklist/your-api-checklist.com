@@ -810,6 +810,33 @@ body {
   color: #4CAF50;
 }
 
+.footer {
+  text-align: center;
+  padding: 2rem 0;
+  margin-top: 2rem;
+}
+
+.footer-text {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.footer-link:hover {
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
 @media (max-width: 768px) {
   .app-container {
     padding: 1rem;
@@ -924,5 +951,14 @@ body {
   
   .category-nav-name {
     font-size: 0.75rem;
+  }
+  
+  .footer {
+    padding: 1.5rem 0;
+    margin-top: 1.5rem;
+  }
+  
+  .footer-text {
+    font-size: 0.85rem;
   }
 }

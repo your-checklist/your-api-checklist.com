@@ -1071,6 +1071,20 @@ function App() {
           <div className="stats-text">{Math.round(progressPercentage)}% completed</div>
         </div>
       </div>
+      
+      <footer className="footer">
+        <p className="footer-text">
+          Built with ❤️ by{' '}
+          <a 
+            href="https://github.com/s1nyx" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            Killian VINCENT
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
