@@ -738,6 +738,18 @@ function App() {
     return icons[category] || '📝';
   };
 
+  // Function to scroll to a specific category
+  const scrollToCategory = (category) => {
+    const element = document.getElementById(`category-${category}`);
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+      });
+    }
+  };
+
   return (
     <div className="app-container">
       <div className="header">
@@ -895,6 +907,34 @@ function App() {
         </div>
       </div>
       
+      <div className="category-navigation">
+        <h3 className="category-nav-title">Quick Navigation</h3>
+        <div className="category-nav-buttons">
+          {Object.keys(groupedChecklist).map((category) => {
+            const categoryItems = groupedChecklist[category];
+            const categoryCompleted = categoryItems.filter(item => item.completed).length;
+            const categoryTotal = categoryItems.length;
+            const categoryProgress = categoryTotal > 0 ? (categoryCompleted / categoryTotal) * 100 : 0;
+            
+            return (
+                              <button
+                  key={category}
+                  className="category-nav-button"
+                  onClick={() => scrollToCategory(category)}
+                  style={{
+                    background: getCategoryColor(category),
+                    color: getCategoryTextColor(category)
+                  }}
+                  title={`Go to ${category} (${categoryCompleted}/${categoryTotal} completed)`}
+                >
+                  <span className="category-nav-icon">{getCategoryIcon(category)}</span>
+                  <span className="category-nav-name">{category}</span>
+                </button>
+            );
+          })}
+        </div>
+      </div>
+      
       <div className="checklist-container">
         <div className="progress-bar">
           <div 
@@ -911,7 +951,7 @@ function App() {
             const isCollapsed = collapsedCategories[category];
 
             return (
-              <div key={category} className="category-section">
+              <div key={category} className="category-section" id={`category-${category}`}>
                 <div 
                   className="category-header"
                   onClick={() => toggleCategory(category)}

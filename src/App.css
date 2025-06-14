@@ -444,6 +444,68 @@ body {
   transition: width 0.3s ease;
 }
 
+.category-navigation {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1.5rem 1rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(15px);
+}
+
+.category-nav-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1rem;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.category-nav-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.category-nav-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  font-weight: 500;
+  text-decoration: none;
+  min-height: 60px;
+  min-width: 100px;
+  max-width: 120px;
+  justify-content: center;
+}
+
+.category-nav-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0.9;
+}
+
+.category-nav-icon {
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.category-nav-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+}
+
 .checklist {
   padding: 0;
 }
@@ -838,5 +900,29 @@ body {
   .github-stars {
     font-size: 0.75rem;
     padding: 0.2rem 0.4rem;
+  }
+  
+  .category-navigation {
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .category-nav-buttons {
+    gap: 0.5rem;
+  }
+  
+  .category-nav-button {
+    padding: 0.6rem 0.8rem;
+    min-height: 50px;
+    min-width: 80px;
+    max-width: 100px;
+  }
+  
+  .category-nav-icon {
+    font-size: 1rem;
+  }
+  
+  .category-nav-name {
+    font-size: 0.75rem;
   }
 }
