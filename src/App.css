@@ -334,6 +334,56 @@ body {
   font-weight: 400;
 }
 
+.github-section {
+  margin: 1.5rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+}
+
+.github-link:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  color: white;
+  text-decoration: none;
+}
+
+.github-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.github-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.github-stars {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
 .priority-filter {
   margin-top: 1.5rem;
   display: flex;
@@ -774,5 +824,19 @@ body {
     right: auto;
     left: 0;
     min-width: 160px;
+  }
+  
+  .github-link {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+  
+  .github-text {
+    gap: 0.4rem;
+  }
+  
+  .github-stars {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
   }
 }
