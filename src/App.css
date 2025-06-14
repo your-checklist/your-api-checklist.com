@@ -327,6 +327,19 @@ body {
   gap: 0.75rem;
 }
 
+.category-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: currentColor;
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+.category-checkbox:hover {
+  transform: scale(1.2);
+}
+
 .category-icon {
   font-size: 1.2rem;
 }

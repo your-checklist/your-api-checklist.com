@@ -319,6 +319,29 @@ function App() {
     }));
   };
 
+  const toggleCategoryCompletion = (category, e) => {
+    e.stopPropagation(); // Prevent category collapse/expand
+    
+    const categoryItems = currentProject.checklist.filter(item => item.category === category);
+    const allCompleted = categoryItems.every(item => item.completed);
+    const newCompletionState = !allCompleted;
+    
+    setProjects(prevProjects => 
+      prevProjects.map(project => 
+        project.id === currentProjectId 
+          ? {
+              ...project,
+              checklist: project.checklist.map(item =>
+                item.category === category 
+                  ? { ...item, completed: newCompletionState }
+                  : item
+              )
+            }
+          : project
+      )
+    );
+  };
+
   const toggleItemExpansion = (id) => {
     setExpandedItems(prev => ({
       ...prev,
@@ -572,6 +595,13 @@ function App() {
                   }}
                 >
                   <div className="category-info">
+                    <input
+                      type="checkbox"
+                      checked={categoryCompleted === categoryTotal && categoryTotal > 0}
+                      onChange={(e) => toggleCategoryCompletion(category, e)}
+                      className="category-checkbox"
+                      title={`${categoryCompleted === categoryTotal && categoryTotal > 0 ? 'Uncheck' : 'Check'} all tasks in ${category}`}
+                    />
                     <span className="category-icon">{getCategoryIcon(category)}</span>
                     <span className="category-name">{category}</span>
                     <span className="category-progress">
