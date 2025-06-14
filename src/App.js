@@ -5,6 +5,8 @@ function App() {
   const defaultChecklist = [
     { id: 1, text: 'Use nouns instead of verbs in endpoints', category: 'Design', completed: false },
     { id: 2, text: 'Use plural nouns for collections', category: 'Design', completed: false },
+    { id: 13, text: 'Use consistent naming conventions', category: 'Design', completed: false },
+    { id: 15, text: 'Use appropriate response formats (JSON)', category: 'Design', completed: false },
     { id: 3, text: 'Use proper HTTP status codes (2xx, 4xx, 5xx)', category: 'HTTP', completed: false },
     { id: 4, text: 'Implement proper error handling with consistent format', category: 'HTTP', completed: false },
     { id: 5, text: 'Use HTTP methods correctly (GET, POST, PUT, DELETE)', category: 'HTTP', completed: false },
@@ -13,6 +15,7 @@ function App() {
     { id: 8, text: 'Implement rate limiting', category: 'Security', completed: false },
     { id: 9, text: 'Use HTTPS everywhere', category: 'Security', completed: false },
     { id: 10, text: 'Implement proper authentication (JWT, OAuth)', category: 'Security', completed: false },
+    { id: 14, text: 'Implement input validation', category: 'Security', completed: false },
     { id: 11, text: 'Version your API (/v1/, /v2/)', category: 'Versioning', completed: false },
     { id: 12, text: 'Provide comprehensive API documentation', category: 'Documentation', completed: false },
     { id: 13, text: 'Use consistent naming conventions', category: 'Design', completed: false },
@@ -52,6 +55,19 @@ function App() {
     return projects[0]?.id || null;
   });
 
+  // Collapsed categories state
+  const [collapsedCategories, setCollapsedCategories] = useState(() => {
+    const saved = localStorage.getItem('api-checklist-collapsed-categories');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Error parsing collapsed categories", e);
+      }
+    }
+    return {};
+  });
+
   const [isEditingName, setIsEditingName] = useState(false);
   const [showProjectSelector, setShowProjectSelector] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
@@ -70,6 +86,11 @@ function App() {
     }
   }, [currentProjectId]);
 
+  // Save collapsed categories
+  useEffect(() => {
+    localStorage.setItem('api-checklist-collapsed-categories', JSON.stringify(collapsedCategories));
+  }, [collapsedCategories]);
+
   const handleToggle = (id) => {
     setProjects(prevProjects => 
       prevProjects.map(project => 
@@ -83,6 +104,13 @@ function App() {
           : project
       )
     );
+  };
+
+  const toggleCategory = (category) => {
+    setCollapsedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
   };
 
   const handleProjectNameSubmit = (e) => {
@@ -156,6 +184,15 @@ function App() {
     return <div>Loading...</div>;
   }
 
+  // Group checklist items by category
+  const groupedChecklist = currentProject.checklist.reduce((acc, item) => {
+    if (!acc[item.category]) {
+      acc[item.category] = [];
+    }
+    acc[item.category].push(item);
+    return acc;
+  }, {});
+
   const completedCount = currentProject.checklist.filter(item => item.completed).length;
   const totalCount = currentProject.checklist.length;
   const progressPercentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
@@ -182,6 +219,18 @@ function App() {
       'Documentation': '#00796b'
     };
     return colors[category] || '#666';
+  };
+
+  const getCategoryIcon = (category) => {
+    const icons = {
+      'Design': '🎨',
+      'HTTP': '🌐',
+      'Performance': '⚡',
+      'Security': '🔒',
+      'Versioning': '📋',
+      'Documentation': '📚'
+    };
+    return icons[category] || '📝';
   };
 
   return (
@@ -292,35 +341,72 @@ function App() {
           ></div>
         </div>
         
-        <ul className="checklist">
-          {currentProject.checklist.map((item) => (
-            <li
-              key={item.id}
-              className={`checklist-item ${item.completed ? 'completed' : ''}`}
-              onClick={() => handleToggle(item.id)}
-            >
-              <input
-                type="checkbox"
-                checked={item.completed}
-                onChange={(e) => {
-                  e.stopPropagation();
-                  handleToggle(item.id);
-                }}
-                className="checkbox"
-              />
-              <span className="item-text">{item.text}</span>
-              <span 
-                className="item-category"
-                style={{
-                  background: getCategoryColor(item.category),
-                  color: getCategoryTextColor(item.category)
-                }}
-              >
-                {item.category}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <div className="checklist">
+          {Object.entries(groupedChecklist).map(([category, items]) => {
+            const categoryCompleted = items.filter(item => item.completed).length;
+            const categoryTotal = items.length;
+            const categoryProgress = categoryTotal > 0 ? (categoryCompleted / categoryTotal) * 100 : 0;
+            const isCollapsed = collapsedCategories[category];
+
+            return (
+              <div key={category} className="category-section">
+                <div 
+                  className="category-header"
+                  onClick={() => toggleCategory(category)}
+                  style={{
+                    background: getCategoryColor(category),
+                    color: getCategoryTextColor(category)
+                  }}
+                >
+                  <div className="category-info">
+                    <span className="category-icon">{getCategoryIcon(category)}</span>
+                    <span className="category-name">{category}</span>
+                    <span className="category-progress">
+                      {categoryCompleted}/{categoryTotal}
+                    </span>
+                  </div>
+                  <div className="category-controls">
+                    <div className="category-progress-bar">
+                      <div 
+                        className="category-progress-fill"
+                        style={{ 
+                          width: `${categoryProgress}%`,
+                          background: getCategoryTextColor(category)
+                        }}
+                      ></div>
+                    </div>
+                    <span className="collapse-icon">
+                      {isCollapsed ? '▶' : '▼'}
+                    </span>
+                  </div>
+                </div>
+                
+                {!isCollapsed && (
+                  <ul className="category-items">
+                    {items.map((item) => (
+                      <li
+                        key={item.id}
+                        className={`checklist-item ${item.completed ? 'completed' : ''}`}
+                        onClick={() => handleToggle(item.id)}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={item.completed}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            handleToggle(item.id);
+                          }}
+                          className="checkbox"
+                        />
+                        <span className="item-text">{item.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
+        </div>
         
         <div className="stats">
           <div className="stats-text">Progress</div>

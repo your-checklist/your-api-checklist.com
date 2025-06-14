@@ -295,17 +295,95 @@ body {
 }
 
 .checklist {
-  list-style: none;
   padding: 0;
 }
 
-.checklist-item {
-  padding: 1.5rem 2rem;
+.category-section {
   border-bottom: 1px solid #f0f0f0;
+}
+
+.category-section:last-child {
+  border-bottom: none;
+}
+
+.category-header {
+  padding: 1rem 2rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.category-header:hover {
+  opacity: 0.9;
+  transform: translateX(3px);
+}
+
+.category-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.category-icon {
+  font-size: 1.2rem;
+}
+
+.category-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.category-progress {
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.category-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.category-progress-bar {
+  width: 60px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.category-progress-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.collapse-icon {
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+  font-weight: bold;
+}
+
+.category-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.checklist-item {
+  padding: 1rem 2rem 1rem 3rem;
+  border-bottom: 1px solid #f8f8f8;
   display: flex;
   align-items: center;
   transition: all 0.3s ease;
   cursor: pointer;
+  background: white;
 }
 
 .checklist-item:hover {
@@ -323,19 +401,20 @@ body {
 }
 
 .checkbox {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   margin-right: 1rem;
   cursor: pointer;
   accent-color: #4CAF50;
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
 .item-text {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   transition: all 0.3s ease;
   flex: 1;
+  line-height: 1.4;
 }
 
 .completed .item-text {
@@ -382,11 +461,19 @@ body {
   }
   
   .checklist-item {
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1.5rem 0.75rem 2.5rem;
   }
   
-  .item-category {
-    display: none;
+  .category-header {
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .category-controls {
+    gap: 0.5rem;
+  }
+  
+  .category-progress-bar {
+    width: 40px;
   }
   
   .project-controls {
