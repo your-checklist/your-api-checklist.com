@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 function App() {
@@ -294,6 +294,9 @@ function App() {
   const [showProjectSelector, setShowProjectSelector] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [showVerticalNav, setShowVerticalNav] = useState(false);
+  const [verticalNavStyle, setVerticalNavStyle] = useState({ opacity: 0 });
+  const appContainerRef = useRef(null);
 
   const currentProject = projects.find(p => p.id === currentProjectId);
 
@@ -335,6 +338,62 @@ function App() {
   useEffect(() => {
     fetchGitHubStars();
   }, []);
+
+  // Handle scroll to show/hide vertical navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      const quickNavElement = document.querySelector('.category-navigation');
+      if (quickNavElement) {
+        const rect = quickNavElement.getBoundingClientRect();
+        setShowVerticalNav(rect.bottom < 20); // Show when nav is off-screen
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Check initial state
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  // Position vertical nav
+  useEffect(() => {
+    const updateNavPosition = () => {
+      if (!appContainerRef.current) return;
+
+      const rect = appContainerRef.current.getBoundingClientRect();
+      const windowWidth = window.innerWidth;
+
+      if (windowWidth > 768) {
+        const leftPosition = rect.right + 20;
+        const navWidth = 50; // Approximate width of the nav bar
+
+        if (leftPosition + navWidth > windowWidth) {
+          // If it would overflow, stick it to the right edge
+          setVerticalNavStyle({
+            right: '20px',
+            left: 'auto',
+            opacity: showVerticalNav ? 1 : 0,
+          });
+        } else {
+          setVerticalNavStyle({
+            left: `${leftPosition}px`,
+            right: 'auto',
+            opacity: showVerticalNav ? 1 : 0,
+          });
+        }
+      } else {
+        // On mobile, let CSS handle the positioning
+        setVerticalNavStyle({ opacity: showVerticalNav ? 1 : 0 });
+      }
+    };
+
+    window.addEventListener('resize', updateNavPosition);
+    updateNavPosition();
+
+    return () => window.removeEventListener('resize', updateNavPosition);
+  }, [showVerticalNav]);
 
   const handleToggle = (id) => {
     setProjects(prevProjects => 
@@ -751,7 +810,7 @@ function App() {
   };
 
   return (
-    <div className="app-container">
+    <div className="app-container" ref={appContainerRef}>
       <div className="header">
         <div className="project-controls">
           <div className="project-name-section">
@@ -1077,14 +1136,40 @@ function App() {
           Built with ❤️ by{' '}
           <a 
             href="https://github.com/s1nyx" 
-            target="_blank" 
-            rel="noopener noreferrer"
+          target="_blank"
+          rel="noopener noreferrer"
             className="footer-link"
           >
             Killian VINCENT
           </a>
         </p>
       </footer>
+      
+      {/* Vertical Navigation */}
+      <div className="vertical-navigation" style={verticalNavStyle}>
+        <div className="vertical-nav-buttons">
+          {Object.keys(groupedChecklist).map((category) => {
+            const categoryItems = groupedChecklist[category];
+            const categoryCompleted = categoryItems.filter(item => item.completed).length;
+            const categoryTotal = categoryItems.length;
+            
+            return (
+              <button
+                key={category}
+                className="vertical-nav-button"
+                onClick={() => scrollToCategory(category)}
+                style={{
+                  background: getCategoryColor(category),
+                  color: getCategoryTextColor(category)
+                }}
+                title={`Go to ${category} (${categoryCompleted}/${categoryTotal} completed)`}
+              >
+                <span className="vertical-nav-icon">{getCategoryIcon(category)}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

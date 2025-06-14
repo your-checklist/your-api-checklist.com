@@ -837,6 +837,49 @@ body {
   transform: translateY(-1px);
 }
 
+.vertical-navigation {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  transition: opacity 0.3s ease-out;
+  opacity: 0; /* Initially hidden, JS will make it visible */
+}
+
+.vertical-nav-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 0.75rem;
+}
+
+.vertical-nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.vertical-nav-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.vertical-nav-icon {
+  font-size: 1.1rem;
+}
+
 @media (max-width: 768px) {
   .app-container {
     padding: 1rem;
@@ -960,5 +1003,24 @@ body {
   
   .footer-text {
     font-size: 0.85rem;
+  }
+  
+  .vertical-navigation {
+    right: 10px;
+    left: auto; /* Ensure left is not set on mobile */
+  }
+  
+  .vertical-nav-buttons {
+    padding: 0.5rem;
+    gap: 0.4rem;
+  }
+  
+  .vertical-nav-button {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .vertical-nav-icon {
+    font-size: 1rem;
   }
 }
