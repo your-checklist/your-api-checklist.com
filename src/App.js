@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  const [checklist, setChecklist] = useState([
+  const defaultChecklist = [
     { id: 1, text: 'Use nouns instead of verbs in endpoints', category: 'Design', completed: false },
     { id: 2, text: 'Use plural nouns for collections', category: 'Design', completed: false },
     { id: 3, text: 'Use proper HTTP status codes (2xx, 4xx, 5xx)', category: 'HTTP', completed: false },
@@ -18,19 +18,147 @@ function App() {
     { id: 13, text: 'Use consistent naming conventions', category: 'Design', completed: false },
     { id: 14, text: 'Implement input validation', category: 'Security', completed: false },
     { id: 15, text: 'Use appropriate response formats (JSON)', category: 'Design', completed: false },
-  ]);
+  ];
+
+  // Load projects from localStorage
+  const [projects, setProjects] = useState(() => {
+    const saved = localStorage.getItem('api-checklist-projects');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      } catch (e) {
+        console.error("Error parsing projects, creating default", e);
+      }
+    }
+    // Create default project
+    const defaultProject = {
+      id: Date.now(),
+      name: 'My API Project',
+      checklist: defaultChecklist,
+      createdAt: new Date().toISOString()
+    };
+    return [defaultProject];
+  });
+
+  // Current active project
+  const [currentProjectId, setCurrentProjectId] = useState(() => {
+    const saved = localStorage.getItem('api-checklist-current-project');
+    if (saved && projects.find(p => p.id === parseInt(saved))) {
+      return parseInt(saved);
+    }
+    return projects[0]?.id || null;
+  });
+
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [showProjectSelector, setShowProjectSelector] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
+
+  const currentProject = projects.find(p => p.id === currentProjectId);
+
+  // Save projects to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('api-checklist-projects', JSON.stringify(projects));
+  }, [projects]);
+
+  // Save current project ID
+  useEffect(() => {
+    if (currentProjectId) {
+      localStorage.setItem('api-checklist-current-project', currentProjectId.toString());
+    }
+  }, [currentProjectId]);
 
   const handleToggle = (id) => {
-    setChecklist(
-      checklist.map((item) =>
-        item.id === id ? { ...item, completed: !item.completed } : item
+    setProjects(prevProjects => 
+      prevProjects.map(project => 
+        project.id === currentProjectId 
+          ? {
+              ...project,
+              checklist: project.checklist.map(item =>
+                item.id === id ? { ...item, completed: !item.completed } : item
+              )
+            }
+          : project
       )
     );
   };
 
-  const completedCount = checklist.filter(item => item.completed).length;
-  const totalCount = checklist.length;
-  const progressPercentage = (completedCount / totalCount) * 100;
+  const handleProjectNameSubmit = (e) => {
+    e.preventDefault();
+    if (currentProject && currentProject.name.trim()) {
+      setProjects(prevProjects =>
+        prevProjects.map(project =>
+          project.id === currentProjectId
+            ? { ...project, name: currentProject.name.trim() }
+            : project
+        )
+      );
+    }
+    setIsEditingName(false);
+  };
+
+  const updateProjectName = (name) => {
+    setProjects(prevProjects =>
+      prevProjects.map(project =>
+        project.id === currentProjectId
+          ? { ...project, name }
+          : project
+      )
+    );
+  };
+
+  const createNewProject = () => {
+    if (newProjectName.trim()) {
+      const newProject = {
+        id: Date.now(),
+        name: newProjectName.trim(),
+        checklist: defaultChecklist.map(item => ({ ...item, completed: false })),
+        createdAt: new Date().toISOString()
+      };
+      setProjects(prev => [...prev, newProject]);
+      setCurrentProjectId(newProject.id);
+      setNewProjectName('');
+      setShowProjectSelector(false);
+    }
+  };
+
+  const deleteProject = (projectId) => {
+    if (projects.length <= 1) {
+      alert('You must have at least one project');
+      return;
+    }
+    
+    if (window.confirm('Are you sure you want to delete this project?')) {
+      const newProjects = projects.filter(p => p.id !== projectId);
+      setProjects(newProjects);
+      
+      if (currentProjectId === projectId) {
+        setCurrentProjectId(newProjects[0].id);
+      }
+    }
+  };
+
+  const resetCurrentProject = () => {
+    if (window.confirm('Are you sure you want to reset the current project checklist?')) {
+      setProjects(prevProjects =>
+        prevProjects.map(project =>
+          project.id === currentProjectId
+            ? { ...project, checklist: defaultChecklist.map(item => ({ ...item, completed: false })) }
+            : project
+        )
+      );
+    }
+  };
+
+  if (!currentProject) {
+    return <div>Loading...</div>;
+  }
+
+  const completedCount = currentProject.checklist.filter(item => item.completed).length;
+  const totalCount = currentProject.checklist.length;
+  const progressPercentage = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
   const getCategoryColor = (category) => {
     const colors = {
@@ -59,8 +187,101 @@ function App() {
   return (
     <div className="app-container">
       <div className="header">
+        <div className="project-controls">
+          <div className="project-name-section">
+            {isEditingName ? (
+              <form onSubmit={handleProjectNameSubmit} className="project-name-form">
+                <input
+                  type="text"
+                  value={currentProject.name}
+                  onChange={(e) => updateProjectName(e.target.value)}
+                  placeholder="Project name..."
+                  className="project-name-input"
+                  autoFocus
+                  onBlur={() => setIsEditingName(false)}
+                />
+              </form>
+            ) : (
+              <h2 
+                className="project-name"
+                onClick={() => setIsEditingName(true)}
+                title="Click to edit the project name"
+              >
+                {currentProject.name}
+              </h2>
+            )}
+          </div>
+          
+          <div className="project-actions">
+            <div className="project-selector">
+              <button 
+                className="project-selector-btn"
+                onClick={() => setShowProjectSelector(!showProjectSelector)}
+              >
+                Projects ({projects.length})
+              </button>
+              
+              {showProjectSelector && (
+                <div className="project-dropdown">
+                  <div className="project-list">
+                    {projects.map(project => (
+                      <div key={project.id} className="project-item">
+                        <button
+                          className={`project-select-btn ${project.id === currentProjectId ? 'active' : ''}`}
+                          onClick={() => {
+                            setCurrentProjectId(project.id);
+                            setShowProjectSelector(false);
+                          }}
+                        >
+                          <span className="project-item-name">{project.name}</span>
+                          <span className="project-item-progress">
+                            {project.checklist.filter(item => item.completed).length}/{project.checklist.length}
+                          </span>
+                        </button>
+                        {projects.length > 1 && (
+                          <button
+                            className="delete-project-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteProject(project.id);
+                            }}
+                            title="Delete project"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="new-project-section">
+                    <input
+                      type="text"
+                      value={newProjectName}
+                      onChange={(e) => setNewProjectName(e.target.value)}
+                      placeholder="New project name..."
+                      className="new-project-input"
+                      onKeyPress={(e) => e.key === 'Enter' && createNewProject()}
+                    />
+                    <button 
+                      className="create-project-btn"
+                      onClick={createNewProject}
+                      disabled={!newProjectName.trim()}
+                    >
+                      Create
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            <button onClick={resetCurrentProject} className="reset-button">
+              Reset Project
+            </button>
+          </div>
+        </div>
+
         <h1 className="title">API RESTful Checklist</h1>
-        <p className="subtitle">Best practices pour développer des APIs robustes et maintenables</p>
+        <p className="subtitle">Best practices to develop robust and maintainable APIs</p>
       </div>
       
       <div className="checklist-container">
@@ -72,7 +293,7 @@ function App() {
         </div>
         
         <ul className="checklist">
-          {checklist.map((item) => (
+          {currentProject.checklist.map((item) => (
             <li
               key={item.id}
               className={`checklist-item ${item.completed ? 'completed' : ''}`}
@@ -81,7 +302,10 @@ function App() {
               <input
                 type="checkbox"
                 checked={item.completed}
-                onChange={() => handleToggle(item.id)}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  handleToggle(item.id);
+                }}
                 className="checkbox"
               />
               <span className="item-text">{item.text}</span>
@@ -99,9 +323,9 @@ function App() {
         </ul>
         
         <div className="stats">
-          <div className="stats-text">Progression</div>
+          <div className="stats-text">Progress</div>
           <div className="stats-number">{completedCount}/{totalCount}</div>
-          <div className="stats-text">{Math.round(progressPercentage)}% complété</div>
+          <div className="stats-text">{Math.round(progressPercentage)}% completed</div>
         </div>
       </div>
     </div>
