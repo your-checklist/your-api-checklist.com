@@ -11,7 +11,6 @@ const LanguageSelector = () => {
 
   return (
     <div className="language-selector">
-      <label className="language-label">{t('language')}:</label>
       <select 
         value={i18n.language} 
         onChange={(e) => changeLanguage(e.target.value)}
