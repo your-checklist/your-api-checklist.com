@@ -1,0 +1,53 @@
+{
+  "title": "Checklist API RESTful",
+  "subtitle": "Meilleures pratiques pour développer des APIs robustes et maintenables prêtes pour la production",
+  "projectName": "Nom du projet...",
+  "clickToEdit": "Cliquez pour modifier le nom du projet",
+  "projects": "Projets",
+  "newProjectName": "Nom du nouveau projet...",
+  "create": "Créer",
+  "resetProject": "Réinitialiser le projet",
+  "export": "Exporter",
+  "starOnGitHub": "Étoiler sur GitHub",
+  "filterByPriority": "Filtrer par priorité :",
+  "allPriorities": "Toutes les priorités",
+  "highPriority": "🔴 Priorité élevée",
+  "mediumPriority": "🟡 Priorité moyenne",
+  "lowPriority": "🟢 Priorité faible",
+  "quickNavigation": "Navigation rapide",
+  "goTo": "Aller à {{category}} ({{completed}}/{{total}} terminé)",
+  "progress": "Progression",
+  "completed": "{{percent}}% terminé",
+  "hideDetails": "Masquer les détails",
+  "showDetails": "Afficher les détails",
+  "noDescription": "Aucune description disponible.",
+  "example": "Exemple :",
+  "learnMore": "En savoir plus :",
+  "builtWith": "Créé avec ❤️ par",
+  "checkAll": "Cocher toutes les tâches dans {{category}}",
+  "uncheckAll": "Décocher toutes les tâches dans {{category}}",
+  "deleteProject": "Supprimer le projet",
+  "exportOptions": {
+    "markdown": "📄 Markdown (.md)",
+    "json": "📋 JSON (.json)",
+    "pdf": "🖨️ PDF (Imprimer)"
+  },
+  "priorities": {
+    "high": "Élevée",
+    "medium": "Moyenne",
+    "low": "Faible"
+  },
+  "categories": {
+    "Design": "Conception",
+    "HTTP": "HTTP",
+    "Performance": "Performance",
+    "Security": "Sécurité",
+    "Versioning": "Versioning",
+    "Documentation": "Documentation"
+  },
+  "language": "Langue",
+  "languages": {
+    "en": "English",
+    "fr": "Français"
+  }
+} 

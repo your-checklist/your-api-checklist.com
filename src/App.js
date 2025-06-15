@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import './App.css';
+import LanguageSelector from './components/LanguageSelector';
 
 function App() {
+  const { t } = useTranslation();
   const [githubStars, setGithubStars] = useState(null);
   
   const defaultChecklist = [
@@ -752,9 +755,9 @@ function App() {
 
   const getPriorityLabel = (priority) => {
     const labels = {
-      'high': 'High',
-      'medium': 'Medium',
-      'low': 'Low'
+      'high': t('priorities.high'),
+      'medium': t('priorities.medium'),
+      'low': t('priorities.low')
     };
     return labels[priority] || 'Unknown';
   };
@@ -822,7 +825,7 @@ function App() {
                   type="text"
                   value={currentProject.name}
                   onChange={(e) => updateProjectName(e.target.value)}
-                  placeholder="Project name..."
+                  placeholder={t('projectName')}
                   className="project-name-input"
                   autoFocus
                   onBlur={() => setIsEditingName(false)}
@@ -832,7 +835,7 @@ function App() {
               <h2 
                 className="project-name"
                 onClick={() => setIsEditingName(true)}
-                title="Click to edit the project name"
+                title={t('clickToEdit')}
               >
                 {currentProject.name}
               </h2>
@@ -845,7 +848,7 @@ function App() {
                 className="project-selector-btn"
                 onClick={() => setShowProjectSelector(!showProjectSelector)}
               >
-                Projects ({projects.length})
+                {t('projects')} ({projects.length})
               </button>
               
               {showProjectSelector && (
@@ -872,7 +875,7 @@ function App() {
                               e.stopPropagation();
                               deleteProject(project.id);
                             }}
-                            title="Delete project"
+                            title={t('deleteProject')}
                           >
                             ×
                           </button>
@@ -886,7 +889,7 @@ function App() {
                       type="text"
                       value={newProjectName}
                       onChange={(e) => setNewProjectName(e.target.value)}
-                      placeholder="New project name..."
+                      placeholder={t('newProjectName')}
                       className="new-project-input"
                       onKeyPress={(e) => e.key === 'Enter' && createNewProject()}
                     />
@@ -895,33 +898,33 @@ function App() {
                       onClick={createNewProject}
                       disabled={!newProjectName.trim()}
                     >
-                      Create
+                      {t('create')}
                     </button>
                   </div>
                 </div>
               )}
             </div>
             <button onClick={resetCurrentProject} className="reset-button">
-              Reset Project
+              {t('resetProject')}
             </button>
             <div className="export-section">
               <button 
                 className="export-button"
                 onClick={() => setShowExportMenu(!showExportMenu)}
               >
-                Export
+                {t('export')}
               </button>
               
               {showExportMenu && (
                 <div className="export-dropdown">
                   <button onClick={exportToMarkdown} className="export-option">
-                    📄 Markdown (.md)
+                    {t('exportOptions.markdown')}
                   </button>
                   <button onClick={exportToJSON} className="export-option">
-                    📋 JSON (.json)
+                    {t('exportOptions.json')}
                   </button>
                   <button onClick={exportToPDF} className="export-option">
-                    🖨️ PDF (Print)
+                    {t('exportOptions.pdf')}
                   </button>
                 </div>
               )}
@@ -929,8 +932,11 @@ function App() {
           </div>
         </div>
 
-        <h1 className="title">API RESTful Checklist</h1>
-        <p className="subtitle">Best practices to develop production-ready robust and maintainable APIs</p>
+        <div className="title-section">
+          <h1 className="title">{t('title')}</h1>
+          <LanguageSelector />
+        </div>
+        <p className="subtitle">{t('subtitle')}</p>
         
         <div className="github-section">
           <a 
@@ -944,7 +950,7 @@ function App() {
               <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
             </svg>
             <span className="github-text">
-              Star on GitHub
+              {t('starOnGitHub')}
               {githubStars !== null && (
                 <span className="github-stars">⭐ {githubStars}</span>
               )}
@@ -953,23 +959,23 @@ function App() {
         </div>
         
         <div className="priority-filter">
-          <label htmlFor="priority-select" className="filter-label">Filter by priority:</label>
+          <label htmlFor="priority-select" className="filter-label">{t('filterByPriority')}</label>
           <select 
             id="priority-select"
             value={priorityFilter} 
             onChange={(e) => setPriorityFilter(e.target.value)}
             className="priority-select"
           >
-            <option value="all">All priorities</option>
-            <option value="high">🔴 High priority</option>
-            <option value="medium">🟡 Medium priority</option>
-            <option value="low">🟢 Low priority</option>
+            <option value="all">{t('allPriorities')}</option>
+            <option value="high">{t('highPriority')}</option>
+            <option value="medium">{t('mediumPriority')}</option>
+            <option value="low">{t('lowPriority')}</option>
           </select>
         </div>
       </div>
       
       <div className="category-navigation">
-        <h3 className="category-nav-title">Quick Navigation</h3>
+        <h3 className="category-nav-title">{t('quickNavigation')}</h3>
         <div className="category-nav-buttons">
           {Object.keys(groupedChecklist).map((category) => {
             const categoryItems = groupedChecklist[category];
@@ -986,7 +992,7 @@ function App() {
                     background: getCategoryColor(category),
                     color: getCategoryTextColor(category)
                   }}
-                  title={`Go to ${category} (${categoryCompleted}/${categoryTotal} completed)`}
+                  title={t('goTo', { category, completed: categoryCompleted, total: categoryTotal })}
                 >
                   <span className="category-nav-icon">{getCategoryIcon(category)}</span>
                   <span className="category-nav-name">{category}</span>
@@ -1027,7 +1033,7 @@ function App() {
                       checked={categoryCompleted === categoryTotal && categoryTotal > 0}
                       onChange={(e) => toggleCategoryCompletion(category, e)}
                       className="category-checkbox"
-                      title={`${categoryCompleted === categoryTotal && categoryTotal > 0 ? 'Uncheck' : 'Check'} all tasks in ${category}`}
+                      title={`${categoryCompleted === categoryTotal && categoryTotal > 0 ? t('uncheckAll', { category }) : t('checkAll', { category })}`}
                     />
                     <span className="category-icon">{getCategoryIcon(category)}</span>
                     <span className="category-name">{category}</span>
@@ -1078,7 +1084,7 @@ function App() {
                                 e.stopPropagation();
                                 toggleItemExpansion(item.id);
                               }}
-                              title={isExpanded ? 'Hide details' : 'Show details'}
+                              title={isExpanded ? t('hideDetails') : t('showDetails')}
                             >
                               {isExpanded ? '−' : '+'}
                             </button>
@@ -1087,17 +1093,17 @@ function App() {
                           {isExpanded && (
                             <div className="item-details">
                               <div className="item-description">
-                                <p>{item.description || 'No description available.'}</p>
+                                <p>{item.description || t('noDescription')}</p>
                                 {item.example && (
                                   <div className="item-example">
-                                    <strong>Example:</strong> <code>{item.example}</code>
+                                                                          <strong>{t('example')}</strong> <code>{item.example}</code>
                                   </div>
                                 )}
                               </div>
                               
                               {item.references && item.references.length > 0 && (
                                 <div className="item-references">
-                                  <strong>Learn more:</strong>
+                                  <strong>{t('learnMore')}</strong>
                                   <ul>
                                     {item.references.map((ref, index) => (
                                       <li key={index}>
@@ -1127,15 +1133,15 @@ function App() {
         </div>
         
         <div className="stats">
-          <div className="stats-text">Progress</div>
+          <div className="stats-text">{t('progress')}</div>
           <div className="stats-number">{completedCount}/{totalCount}</div>
-          <div className="stats-text">{Math.round(progressPercentage)}% completed</div>
+          <div className="stats-text">{t('completed', { percent: Math.round(progressPercentage) })}</div>
         </div>
       </div>
       
       <footer className="footer">
         <p className="footer-text">
-          Built with ❤️ by{' '}
+          {t('builtWith')}{' '}
           <a 
             href="https://github.com/s1nyx" 
           target="_blank"
@@ -1164,7 +1170,7 @@ function App() {
                   background: getCategoryColor(category),
                   color: getCategoryTextColor(category)
                 }}
-                title={`Go to ${category} (${categoryCompleted}/${categoryTotal} completed)`}
+                title={t('goTo', { category, completed: categoryCompleted, total: categoryTotal })}
               >
                 <span className="vertical-nav-icon">{getCategoryIcon(category)}</span>
               </button>

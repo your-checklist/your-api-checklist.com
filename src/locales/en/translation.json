@@ -1,0 +1,53 @@
+{
+  "title": "RESTful API Checklist",
+  "subtitle": "Best practices to develop production-ready robust and maintainable APIs",
+  "projectName": "Project name...",
+  "clickToEdit": "Click to edit the project name",
+  "projects": "Projects",
+  "newProjectName": "New project name...",
+  "create": "Create",
+  "resetProject": "Reset Project",
+  "export": "Export",
+  "starOnGitHub": "Star on GitHub",
+  "filterByPriority": "Filter by priority:",
+  "allPriorities": "All priorities",
+  "highPriority": "🔴 High priority",
+  "mediumPriority": "🟡 Medium priority",
+  "lowPriority": "🟢 Low priority",
+  "quickNavigation": "Quick Navigation",
+  "goTo": "Go to {{category}} ({{completed}}/{{total}} completed)",
+  "progress": "Progress",
+  "completed": "{{percent}}% completed",
+  "hideDetails": "Hide details",
+  "showDetails": "Show details",
+  "noDescription": "No description available.",
+  "example": "Example:",
+  "learnMore": "Learn more:",
+  "builtWith": "Built with ❤️ by",
+  "checkAll": "Check all tasks in {{category}}",
+  "uncheckAll": "Uncheck all tasks in {{category}}",
+  "deleteProject": "Delete project",
+  "exportOptions": {
+    "markdown": "📄 Markdown (.md)",
+    "json": "📋 JSON (.json)",
+    "pdf": "🖨️ PDF (Print)"
+  },
+  "priorities": {
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
+  "categories": {
+    "Design": "Design",
+    "HTTP": "HTTP",
+    "Performance": "Performance",
+    "Security": "Security",
+    "Versioning": "Versioning",
+    "Documentation": "Documentation"
+  },
+  "language": "Language",
+  "languages": {
+    "en": "English",
+    "fr": "Français"
+  }
+} 
