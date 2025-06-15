@@ -1,10 +1,13 @@
 # Your API Checklist
 
+<p align="center">
+  <img src=".github/assets/banner.png" alt="your-api-checklist banner" />
+</p>
+
 An interactive, comprehensive, and beautifully designed checklist for RESTful API best practices. Built for developers who want to design, test, and launch robust and maintainable APIs.
 
 **[➡️ Live Demo](https://your-checklist.github.io/your-api-checklist.com/)**
 
-![Your API Checklist Screenshot](https://user-images.githubusercontent.com/10929294/210134267-036154ea-58b2-4b2c-992a-3c2288077c48.png)
 
 ## ✨ Features
 
