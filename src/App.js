@@ -929,7 +929,7 @@ function App() {
         </div>
 
         <h1 className="title">API RESTful Checklist</h1>
-        <p className="subtitle">Best practices to develop robust and maintainable APIs</p>
+        <p className="subtitle">Best practices to develop production-ready robust and maintainable APIs</p>
         
         <div className="github-section">
           <a 
