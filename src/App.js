@@ -259,6 +259,7 @@ function App() {
     if (saved && projects.find(p => p.id === parseInt(saved))) {
       return parseInt(saved);
     }
+    
     return projects[0]?.id || null;
   });
 
