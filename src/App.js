@@ -242,6 +242,7 @@ function App() {
         console.error("Error parsing projects, creating default", e);
       }
     }
+    
     // Create default project
     const defaultProject = {
       id: Date.now(),
