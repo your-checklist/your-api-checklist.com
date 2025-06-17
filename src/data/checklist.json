@@ -295,5 +295,88 @@
         "url": "https://learning.postman.com/docs/publishing-your-api/documenting-your-api/"
       }
     ]
+  },
+  {
+    "id": 16,
+    "text": "Configure Cross-Origin Resource Sharing (CORS) headers appropriately",
+    "category": "Security",
+    "priority": "high",
+    "completed": false,
+    "description": "Properly configure CORS to control which domains can access your API. A misconfigured CORS (e.g., allowing '*') can expose your API to cross-site request forgery (CSRF) and other attacks.",
+    "example": "Access-Control-Allow-Origin: https://your-frontend-app.com",
+    "references": [
+      {
+        "title": "MDN - Cross-Origin Resource Sharing (CORS)",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "text": "Implement comprehensive logging and monitoring",
+    "category": "Security",
+    "priority": "medium",
+    "completed": false,
+    "description": "Log all requests and critical events (like authentication attempts, errors, data modification). This is essential for debugging, security auditing, and monitoring API health.",
+    "example": "Log format: [Timestamp] [Level] [Request-ID] [User-ID] [HTTP Method] [Endpoint] [Status Code]",
+    "references": [
+      {
+        "title": "OWASP Logging Cheat Sheet",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "text": "Enable compression (Gzip, Brotli)",
+    "category": "Performance",
+    "priority": "medium",
+    "completed": false,
+    "description": "Use compression to reduce the size of the response payload. This significantly improves response times, especially for clients with slow network connections.",
+    "example": "Request header: Accept-Encoding: gzip, deflate, br | Response header: Content-Encoding: gzip",
+    "references": [
+      {
+        "title": "MDN - HTTP compression",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Compression"
+      },
+      {
+        "title": "Google Web Fundamentals - Text Compression",
+        "url": "https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/text-compression"
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "text": "Provide filtering, sorting, and field selection capabilities",
+    "category": "Design",
+    "priority": "medium",
+    "completed": false,
+    "description": "Allow clients to request only the data they need. This makes the API more flexible and reduces payload size. Filtering is done via query parameters, sorting specifies the order, and field selection limits the returned JSON fields.",
+    "example": "GET /users?status=active&sort=-createdAt&fields=id,name,email",
+    "references": [
+      {
+        "title": "JSON:API - Fetching Data (Sorting, Filtering, etc.)",
+        "url": "https://jsonapi.org/format/#fetching"
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "text": "Ensure idempotency for PUT, PATCH, and DELETE methods",
+    "category": "HTTP",
+    "priority": "high",
+    "completed": false,
+    "description": "An idempotent operation can be called multiple times with the same input without changing the result beyond the initial application. This is crucial for building reliable clients that can safely retry requests after a network failure.",
+    "example": "DELETE /users/123 will always result in user 123 being deleted, whether called once or ten times.",
+    "references": [
+      {
+        "title": "MDN - Idempotent HTTP methods",
+        "url": "https://developer.mozilla.org/en-US/docs/Glossary/Idempotent"
+      },
+      {
+        "title": "Stripe API - Designing for Idempotency",
+        "url": "https://stripe.com/blog/idempotency"
+      }
+    ]
   }
 ] 
