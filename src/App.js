@@ -99,6 +99,9 @@ function App() {
   const [showProjectSelector, setShowProjectSelector] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [importError, setImportError] = useState('');
+  const [importSuccess, setImportSuccess] = useState('');
   const [showVerticalNav, setShowVerticalNav] = useState(false);
   const [verticalNavStyle, setVerticalNavStyle] = useState({ opacity: 0 });
   const appContainerRef = useRef(null);
@@ -126,6 +129,17 @@ function App() {
   useEffect(() => {
     localStorage.setItem('api-checklist-expanded-items', JSON.stringify(expandedItems));
   }, [expandedItems]);
+
+  // Auto-hide import messages after 5 seconds
+  useEffect(() => {
+    if (importSuccess || importError) {
+      const timer = setTimeout(() => {
+        setImportSuccess('');
+        setImportError('');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [importSuccess, importError]);
 
   // Fetch GitHub stars
   const fetchGitHubStars = async () => {
@@ -506,6 +520,116 @@ function App() {
     setShowExportMenu(false);
   };
 
+  // Import function
+  const importFromJSON = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Reset messages
+    setImportError('');
+    setImportSuccess('');
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target.result);
+        
+        // Validate the imported data structure
+        if (!importedData || typeof importedData !== 'object') {
+          throw new Error('Invalid JSON file format');
+        }
+
+        // Handle different possible JSON formats
+        let projectName, checklist;
+        
+        if (importedData.projectName && importedData.checklist) {
+          // Standard export format
+          projectName = importedData.projectName;
+          checklist = importedData.checklist;
+        } else if (Array.isArray(importedData)) {
+          // Direct checklist array
+          projectName = 'Imported Project';
+          checklist = importedData;
+        } else if (importedData.name && importedData.checklist) {
+          // Alternative project format
+          projectName = importedData.name;
+          checklist = importedData.checklist;
+        } else {
+          throw new Error('Unrecognized JSON format. Expected a project with name and checklist.');
+        }
+
+        if (!Array.isArray(checklist)) {
+          throw new Error('Invalid checklist format. Expected an array of checklist items.');
+        }
+
+        // Generate unique project name if one already exists
+        let finalProjectName = projectName;
+        let counter = 1;
+        while (projects.some(p => p.name === finalProjectName)) {
+          finalProjectName = `${projectName} (${counter})`;
+          counter++;
+        }
+
+        // Migrate and validate checklist items
+        const migratedChecklist = checklist.map((item, index) => {
+          if (!item || typeof item !== 'object') {
+            throw new Error(`Invalid checklist item at position ${index + 1}`);
+          }
+          
+          // Validate that text exists and is a string
+          if (!item.text || typeof item.text !== 'string') {
+            throw new Error(`Missing or invalid text for checklist item at position ${index + 1}`);
+          }
+          
+          // Ensure required fields exist with proper validation
+          const validatedItem = {
+            id: item.id || Date.now() + Math.random() + index,
+            text: item.text.trim(),
+            category: typeof item.category === 'string' ? item.category : 'Design',
+            priority: ['high', 'medium', 'low'].includes(item.priority) ? item.priority : 'medium',
+            completed: Boolean(item.completed),
+            description: typeof item.description === 'string' ? item.description : '',
+            example: typeof item.example === 'string' ? item.example : '',
+            references: Array.isArray(item.references) ? item.references.filter(ref => 
+              ref && typeof ref === 'object' && ref.title && ref.url
+            ) : []
+          };
+
+          // Use the existing migration function to map to default structure if possible
+          return migrateChecklistItem(validatedItem);
+        });
+
+        // Create new project
+        const newProject = {
+          id: Date.now(),
+          name: finalProjectName,
+          checklist: migratedChecklist,
+          createdAt: new Date().toISOString()
+        };
+
+        // Add project and set as current
+        setProjects(prev => [...prev, newProject]);
+        setCurrentProjectId(newProject.id);
+        setImportSuccess(`Successfully imported "${finalProjectName}"`);
+        setShowImportDialog(false);
+        setShowExportMenu(false);
+
+      } catch (error) {
+        console.error('Import error:', error);
+        setImportError(`Import failed: ${error.message}`);
+      }
+    };
+
+    reader.onerror = () => {
+      setImportError('Failed to read the file');
+    };
+
+    reader.readAsText(file);
+    
+    // Reset the input value so the same file can be imported again
+    event.target.value = '';
+  };
+
   if (!currentProject) {
     return <div>Loading...</div>;
   }
@@ -698,6 +822,12 @@ function App() {
             <button onClick={resetCurrentProject} className="reset-button">
               {t('resetProject')}
             </button>
+            <button 
+              className="import-button"
+              onClick={() => setShowImportDialog(true)}
+            >
+              {t('importProject')}
+            </button>
             <div className="export-section">
               <button 
                 className="export-button"
@@ -722,6 +852,48 @@ function App() {
             </div>
           </div>
         </div>
+
+        {/* Import Dialog */}
+        {showImportDialog && (
+          <div className="import-dialog-overlay" onClick={() => setShowImportDialog(false)}>
+            <div className="import-dialog" onClick={(e) => e.stopPropagation()}>
+              <div className="import-dialog-header">
+                <h3>{t('import.title')}</h3>
+                <button 
+                  className="import-dialog-close"
+                  onClick={() => setShowImportDialog(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="import-dialog-content">
+                <p>{t('import.description')}</p>
+                <div className="import-file-section">
+                  <input
+                    type="file"
+                    id="import-file"
+                    accept=".json"
+                    onChange={importFromJSON}
+                    className="import-file-input"
+                  />
+                  <label htmlFor="import-file" className="import-file-label">
+                    {t('import.selectFile')}
+                  </label>
+                </div>
+                {importError && (
+                  <div className="import-message import-error">
+                    {importError}
+                  </div>
+                )}
+                {importSuccess && (
+                  <div className="import-message import-success">
+                    {importSuccess}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="title-section">
           <h1 className="title">{t('title')}</h1>

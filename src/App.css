@@ -260,6 +260,25 @@ body {
   transform: translateY(-2px);
 }
 
+.import-button {
+  position: static;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.import-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
 .export-section {
   position: relative;
 }
@@ -318,6 +337,118 @@ body {
 
 .export-option:not(:last-child) {
   border-bottom: 1px solid #f0f0f0;
+}
+
+/* Import Dialog Styles */
+.import-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 2rem;
+}
+
+.import-dialog {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.import-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.import-dialog-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.import-dialog-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.import-dialog-close:hover {
+  color: #333;
+}
+
+.import-dialog-content {
+  padding: 1.5rem 2rem 2rem;
+}
+
+.import-dialog-content p {
+  margin: 0 0 1.5rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+.import-file-section {
+  margin-bottom: 1rem;
+}
+
+.import-file-input {
+  display: none;
+}
+
+.import-file-label {
+  display: inline-block;
+  background: #667eea;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.import-file-label:hover {
+  background: #5a6fd8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.import-message {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.import-error {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+}
+
+.import-success {
+  background: #e8f5e8;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
 }
 
 .title-section {
@@ -1034,5 +1165,22 @@ body {
   
   .vertical-nav-icon {
     font-size: 1rem;
+  }
+  
+  .import-dialog-overlay {
+    padding: 1rem;
+  }
+  
+  .import-dialog {
+    max-width: none;
+    width: 100%;
+  }
+  
+  .import-dialog-header {
+    padding: 1rem 1.5rem 0.75rem;
+  }
+  
+  .import-dialog-content {
+    padding: 1rem 1.5rem 1.5rem;
   }
 }
