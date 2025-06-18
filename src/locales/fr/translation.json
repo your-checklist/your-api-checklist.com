@@ -7,6 +7,7 @@
   "newProjectName": "Nom du nouveau projet...",
   "create": "Créer",
   "resetProject": "Réinitialiser le projet",
+  "importProject": "Importer",
   "export": "Exporter",
   "starOnGitHub": "Étoiler sur GitHub",
   "filterByPriority": "Filtrer par priorité :",
@@ -31,6 +32,11 @@
     "markdown": "📄 Markdown (.md)",
     "json": "📋 JSON (.json)",
     "pdf": "🖨️ PDF (Imprimer)"
+  },
+  "import": {
+    "title": "Importer un projet",
+    "description": "Sélectionnez un fichier JSON exporté depuis cette application pour importer un projet. Le projet importé sera ajouté à votre liste de projets.",
+    "selectFile": "Choisir un fichier JSON"
   },
   "priorities": {
     "high": "Élevée",
