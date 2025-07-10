@@ -302,12 +302,20 @@
     "category": "Security",
     "priority": "high",
     "completed": false,
-    "description": "Properly configure CORS to control which domains can access your API. A misconfigured CORS (e.g., allowing '*') can expose your API to cross-site request forgery (CSRF) and other attacks.",
-    "example": "Access-Control-Allow-Origin: https://your-frontend-app.com",
+    "description": "Properly configure CORS to control which domains can access your API. Avoid wildcard (*) origins in production and explicitly specify allowed domains. Configure appropriate methods, headers, and credentials policies to prevent security vulnerabilities.",
+    "example": "Access-Control-Allow-Origin: https://your-frontend-app.com\nAccess-Control-Allow-Methods: GET, POST, PUT, DELETE\nAccess-Control-Allow-Headers: Content-Type, Authorization",
     "references": [
       {
         "title": "MDN - Cross-Origin Resource Sharing (CORS)",
         "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
+      },
+      {
+        "title": "OWASP - Cross-Origin Resource Sharing",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Origin_Resource_Sharing_Cheat_Sheet.html"
+      },
+      {
+        "title": "CORS Best Practices",
+        "url": "https://blog.logrocket.com/the-ultimate-guide-to-enabling-cross-origin-resource-sharing-cors/"
       }
     ]
   },
@@ -327,7 +335,64 @@
     ]
   },
   {
-    "id": 18,
+    "id": 21,
+    "text": "Handle CORS preflight requests properly",
+    "category": "Security",
+    "priority": "high",
+    "completed": false,
+    "description": "Implement proper handling for CORS preflight OPTIONS requests. Preflight requests are automatically sent by browsers for complex requests and must be handled correctly to allow actual requests to proceed.",
+    "example": "app.options('*', (req, res) => {\n  res.header('Access-Control-Allow-Origin', 'https://yourapp.com');\n  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');\n  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');\n  res.send();\n});",
+    "references": [
+      {
+        "title": "MDN - CORS Preflight",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#preflighted_requests"
+      },
+      {
+        "title": "Understanding CORS Preflight",
+        "url": "https://javascript.info/fetch-crossorigin#preflight-requests"
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "text": "Configure CORS credentials handling securely",
+    "category": "Security",
+    "priority": "medium",
+    "completed": false,
+    "description": "When your API needs to handle cookies or authentication headers across origins, properly configure Access-Control-Allow-Credentials. Never use wildcard origins (*) when credentials are allowed.",
+    "example": "Access-Control-Allow-Credentials: true\nAccess-Control-Allow-Origin: https://trusted-domain.com\n// Never: Access-Control-Allow-Origin: * with credentials",
+    "references": [
+      {
+        "title": "MDN - Credentials in CORS",
+        "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#requests_with_credentials"
+      },
+      {
+        "title": "CORS Credentials Security",
+        "url": "https://portswigger.net/web-security/cors"
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "text": "Test CORS configuration thoroughly",
+    "category": "Security", 
+    "priority": "medium",
+    "completed": false,
+    "description": "Verify CORS configuration works correctly across different environments and browsers. Test both simple and complex requests, preflight scenarios, and error handling. Use browser developer tools to debug CORS issues.",
+    "example": "// Test with curl:\ncurl -H \"Origin: https://yourapp.com\" \\\n     -H \"Access-Control-Request-Method: POST\" \\\n     -H \"Access-Control-Request-Headers: X-Requested-With\" \\\n     -X OPTIONS https://api.example.com/data",
+    "references": [
+      {
+        "title": "Testing CORS Configuration",
+        "url": "https://www.test-cors.org/"
+      },
+      {
+        "title": "CORS Debugging Guide", 
+        "url": "https://developer.chrome.com/docs/devtools/network/cors/"
+      }
+    ]
+  },
+  {
+    "id": 24,
     "text": "Enable compression (Gzip, Brotli)",
     "category": "Performance",
     "priority": "medium",
@@ -346,7 +411,7 @@
     ]
   },
   {
-    "id": 19,
+    "id": 25,
     "text": "Provide filtering, sorting, and field selection capabilities",
     "category": "Design",
     "priority": "medium",
@@ -361,7 +426,7 @@
     ]
   },
   {
-    "id": 20,
+    "id": 26,
     "text": "Ensure idempotency for PUT, PATCH, and DELETE methods",
     "category": "HTTP",
     "priority": "high",
