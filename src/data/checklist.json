@@ -298,16 +298,20 @@
   },
   {
     "id": 16,
-    "text": "Configure Cross-Origin Resource Sharing (CORS) headers appropriately",
+    "text": "Configure and test Cross-Origin Resource Sharing (CORS) thoroughly",
     "category": "Security",
     "priority": "high",
     "completed": false,
-    "description": "Properly configure CORS to control which domains can access your API. A misconfigured CORS (e.g., allowing '*') can expose your API to cross-site request forgery (CSRF) and other attacks.",
-    "example": "Access-Control-Allow-Origin: https://your-frontend-app.com",
+    "description": "Properly configure CORS to control which domains can access your API, avoiding wildcard origins in production. This includes correctly handling preflight OPTIONS requests for complex scenarios, securely managing credentials (`Access-Control-Allow-Credentials`), and thoroughly testing the entire setup to prevent security vulnerabilities.",
+    "example": "// Correct headers\nAccess-Control-Allow-Origin: https://your-frontend-app.com\nAccess-Control-Allow-Methods: GET, POST, PUT, DELETE\nAccess-Control-Allow-Headers: Content-Type, Authorization\n\n// Testing with curl\ncurl -H \"Origin: https://yourapp.com\" -X OPTIONS https://api.example.com/data",
     "references": [
       {
         "title": "MDN - Cross-Origin Resource Sharing (CORS)",
         "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
+      },
+      {
+        "title": "CORS Credentials Security",
+        "url": "https://portswigger.net/web-security/cors"
       }
     ]
   },
@@ -327,7 +331,7 @@
     ]
   },
   {
-    "id": 18,
+    "id": 24,
     "text": "Enable compression (Gzip, Brotli)",
     "category": "Performance",
     "priority": "medium",
@@ -346,7 +350,7 @@
     ]
   },
   {
-    "id": 19,
+    "id": 25,
     "text": "Provide filtering, sorting, and field selection capabilities",
     "category": "Design",
     "priority": "medium",
@@ -361,7 +365,7 @@
     ]
   },
   {
-    "id": 20,
+    "id": 26,
     "text": "Ensure idempotency for PUT, PATCH, and DELETE methods",
     "category": "HTTP",
     "priority": "high",

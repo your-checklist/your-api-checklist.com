@@ -1058,7 +1058,7 @@ function App() {
                                 <p>{item.description || t('noDescription')}</p>
                                 {item.example && (
                                   <div className="item-example">
-                                                                          <strong>{t('example')}</strong> <code>{item.example}</code>
+                                    <strong>{t('example')}</strong> <code>{item.example}</code>
                                   </div>
                                 )}
                               </div>

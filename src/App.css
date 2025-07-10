@@ -891,6 +891,7 @@ body {
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   font-size: 0.85rem;
   color: #d63384;
+  white-space: pre-line;
 }
 
 .item-references {
