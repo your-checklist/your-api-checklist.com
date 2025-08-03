@@ -382,5 +382,28 @@
         "url": "https://stripe.com/blog/idempotency"
       }
     ]
+  },
+  {
+    "id": 27,
+    "text": "Sanitize all input data and never trust the client",
+    "category": "Security",
+    "priority": "high",
+    "completed": false,
+    "description": "Always assume client data is malicious and sanitize all inputs on the server side. This includes removing or encoding dangerous characters, validating data formats, and applying context-appropriate sanitization before processing or storing data.",
+    "example": "HTML sanitization: '<script>alert(\"xss\")</script>' → '&lt;script&gt;alert(\"xss\")&lt;/script&gt;', SQL escaping, JSON sanitization",
+    "references": [
+      {
+        "title": "OWASP Input Sanitization",
+        "url": "https://owasp.org/www-community/controls/Input_Sanitization"
+      },
+      {
+        "title": "Data Sanitization Best Practices",
+        "url": "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html#sanitization"
+      },
+      {
+        "title": "Never Trust User Input",
+        "url": "https://owasp.org/www-project-top-ten/2017/A1_2017-Injection"
+      }
+    ]
   }
 ] 

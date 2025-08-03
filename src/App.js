@@ -563,9 +563,10 @@ function App() {
         }
 
         // Generate unique project name if one already exists
+        const existingNames = projects.map(p => p.name);
         let finalProjectName = projectName;
         let counter = 1;
-        while (projects.some(p => p.name === finalProjectName)) {
+        while (existingNames.includes(finalProjectName)) {
           finalProjectName = `${projectName} (${counter})`;
           counter++;
         }
