@@ -529,19 +529,47 @@ function App() {
     setImportError('');
     setImportSuccess('');
 
+    // Validate file type
+    if (!file.name.endsWith('.json')) {
+      setImportError('Please select a valid JSON file');
+      event.target.value = '';
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      setImportError('File size exceeds 10MB limit');
+      event.target.value = '';
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const importedData = JSON.parse(e.target.result);
-        
+        // Sanitize and parse JSON
+        const jsonString = e.target.result;
+
+        // Check for suspicious patterns before parsing
+        if (jsonString.includes('__proto__') || jsonString.includes('constructor') || jsonString.includes('prototype')) {
+          throw new Error('Potentially malicious JSON detected');
+        }
+
+        const importedData = JSON.parse(jsonString);
+
         // Validate the imported data structure
         if (!importedData || typeof importedData !== 'object') {
           throw new Error('Invalid JSON file format');
         }
 
+        // Prevent prototype pollution
+        if (importedData.__proto__ || importedData.constructor || importedData.prototype) {
+          throw new Error('Invalid JSON structure detected');
+        }
+
         // Handle different possible JSON formats
         let projectName, checklist;
-        
+
         if (importedData.projectName && importedData.checklist) {
           // Standard export format
           projectName = importedData.projectName;
@@ -558,46 +586,129 @@ function App() {
           throw new Error('Unrecognized JSON format. Expected a project with name and checklist.');
         }
 
+        // Validate project name
+        if (typeof projectName !== 'string' || projectName.length === 0) {
+          projectName = 'Imported Project';
+        }
+
+        // Sanitize project name (remove special characters that could cause issues)
+        // eslint-disable-next-line no-control-regex, no-useless-escape
+        projectName = projectName.replace(/[<>:"\/\\|?*\x00-\x1f]/g, '').substring(0, 100);
+
+        if (!projectName.trim()) {
+          projectName = 'Imported Project';
+        }
+
         if (!Array.isArray(checklist)) {
           throw new Error('Invalid checklist format. Expected an array of checklist items.');
+        }
+
+        // Validate array size
+        if (checklist.length > 1000) {
+          throw new Error('Checklist contains too many items (max 1000)');
         }
 
         // Generate unique project name if one already exists
         let finalProjectName = projectName;
         let counter = 1;
+        // eslint-disable-next-line no-loop-func
         while (projects.some(p => p.name === finalProjectName)) {
           finalProjectName = `${projectName} (${counter})`;
           counter++;
         }
+
+        // Valid categories from the app
+        const validCategories = ['Design', 'HTTP', 'Performance', 'Security', 'Versioning', 'Documentation'];
 
         // Migrate and validate checklist items
         const migratedChecklist = checklist.map((item, index) => {
           if (!item || typeof item !== 'object') {
             throw new Error(`Invalid checklist item at position ${index + 1}`);
           }
-          
+
+          // Prevent prototype pollution on items
+          if (item.__proto__ || item.constructor || item.prototype) {
+            throw new Error(`Invalid item structure at position ${index + 1}`);
+          }
+
           // Validate that text exists and is a string
           if (!item.text || typeof item.text !== 'string') {
             throw new Error(`Missing or invalid text for checklist item at position ${index + 1}`);
           }
-          
+
+          // Sanitize text field
+          const sanitizedText = item.text.trim().substring(0, 500);
+          if (!sanitizedText) {
+            throw new Error(`Empty text for checklist item at position ${index + 1}`);
+          }
+
+          // Validate category
+          let category = item.category;
+          if (typeof category !== 'string' || !validCategories.includes(category)) {
+            category = 'Design'; // Default to Design if invalid
+          }
+
+          // Validate priority
+          const validPriorities = ['high', 'medium', 'low'];
+          const priority = validPriorities.includes(item.priority) ? item.priority : 'medium';
+
+          // Validate and sanitize description
+          let description = '';
+          if (typeof item.description === 'string') {
+            description = item.description.substring(0, 2000);
+          }
+
+          // Validate and sanitize example
+          let example = '';
+          if (typeof item.example === 'string') {
+            example = item.example.substring(0, 1000);
+          }
+
+          // Validate references
+          let references = [];
+          if (Array.isArray(item.references)) {
+            references = item.references
+              .slice(0, 10) // Max 10 references per item
+              .filter(ref => {
+                if (!ref || typeof ref !== 'object') return false;
+                if (!ref.title || typeof ref.title !== 'string') return false;
+                if (!ref.url || typeof ref.url !== 'string') return false;
+
+                // Validate URL format
+                try {
+                  const url = new URL(ref.url);
+                  // Only allow http and https protocols
+                  return url.protocol === 'http:' || url.protocol === 'https:';
+                } catch {
+                  return false;
+                }
+              })
+              .map(ref => ({
+                title: ref.title.substring(0, 200),
+                url: ref.url.substring(0, 2000)
+              }));
+          }
+
           // Ensure required fields exist with proper validation
           const validatedItem = {
-            id: item.id || Date.now() + Math.random() + index,
-            text: item.text.trim(),
-            category: typeof item.category === 'string' ? item.category : 'Design',
-            priority: ['high', 'medium', 'low'].includes(item.priority) ? item.priority : 'medium',
+            id: Date.now() + Math.random() + index, // Always generate new ID for security
+            text: sanitizedText,
+            category: category,
+            priority: priority,
             completed: Boolean(item.completed),
-            description: typeof item.description === 'string' ? item.description : '',
-            example: typeof item.example === 'string' ? item.example : '',
-            references: Array.isArray(item.references) ? item.references.filter(ref => 
-              ref && typeof ref === 'object' && ref.title && ref.url
-            ) : []
+            description: description,
+            example: example,
+            references: references
           };
 
           // Use the existing migration function to map to default structure if possible
           return migrateChecklistItem(validatedItem);
         });
+
+        // Validate final checklist
+        if (migratedChecklist.length === 0) {
+          throw new Error('No valid checklist items found');
+        }
 
         // Create new project
         const newProject = {
@@ -616,7 +727,18 @@ function App() {
 
       } catch (error) {
         console.error('Import error:', error);
-        setImportError(`Import failed: ${error.message}`);
+
+        // Provide user-friendly error messages
+        let errorMessage = 'Import failed: ';
+        if (error.message.includes('JSON')) {
+          errorMessage += 'Invalid JSON file format';
+        } else if (error.message.includes('malicious')) {
+          errorMessage += 'Security issue detected in file';
+        } else {
+          errorMessage += error.message;
+        }
+
+        setImportError(errorMessage);
       }
     };
 
@@ -625,7 +747,7 @@ function App() {
     };
 
     reader.readAsText(file);
-    
+
     // Reset the input value so the same file can be imported again
     event.target.value = '';
   };
